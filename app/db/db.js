@@ -1,9 +1,11 @@
 import { Sqlite } from "nativescript-sqlite";
 
-const categoriesDB = await Sqlite("categories.db");
-const expensesDB = await Sqlite("expenses.db");
+let categoriesDB = null;
+let expensesDB = null;
 
 async function createTables() {
+    categoriesDB = await Sqlite("categories.db");
+    expensesDB = await Sqlite("expenses.db");
     await categoriesDB.execSQL(`
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

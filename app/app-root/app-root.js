@@ -1,7 +1,7 @@
 import { Frame, Application } from '@nativescript/core';
 
-import { AppRootViewModel } from './app-root-view-model'
-import { createTables } from '~/db/db';
+import { AppRootViewModel } from './app-root-view-model';
+import { createTables } from '../db/db';
 
 export function onLoaded(args) {
   const drawerComponent = args.object
@@ -32,9 +32,7 @@ export function onNavigationItemTap(args) {
 async function initializeDatabase() {
   try {
     await createTables();
-    console.log("Database and tables initialized successfully.");
   } catch (error) {
-    console.error("Error initializing database:", error);
   }
 }
 
