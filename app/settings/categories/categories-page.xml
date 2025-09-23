@@ -1,0 +1,81 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="onLoaded">
+    <ActionBar title="カテゴリ設定">
+        <NavigationButton text="戻る" tap="onBackTap" />
+    </ActionBar>
+    
+    <ScrollView>
+        <StackLayout padding="16">
+
+            <!-- カテゴリ追加セクション -->
+            <Label text="新しいカテゴリを追加" class="h3" marginBottom="16" />
+            
+            <StackLayout orientation="horizontal" marginBottom="16">
+                <TextField 
+                    text="{{ newCategoryName }}" 
+                    hint="カテゴリ名を入力"
+                    width="70%" />
+                <Button 
+                    text="追加" 
+                    tap="{{ addCategory }}"
+                    class="btn-primary"
+                    width="25%" 
+                    marginLeft="5%" />
+            </StackLayout>
+            
+            <!-- カテゴリ一覧 -->
+            <Label text="登録済みカテゴリ" class="h3" marginBottom="8" />
+            
+            <ListView 
+                items="{{ categories }}" 
+                height="400"
+                separatorColor="#E0E0E0">
+                <ListView.itemTemplate>
+                    <StackLayout orientation="horizontal" padding="12">
+                        <Label 
+                            text="{{ name }}" 
+                            verticalAlignment="center"
+                            width="60%" />
+                        <Button 
+                            text="編集" 
+                            tap="{{ $parents['Page'].bindingContext.editCategory }}"
+                            class="btn-secondary"
+                            width="15%" 
+                            marginRight="5%" />
+                        <Button 
+                            text="削除" 
+                            tap="{{ $parents['Page'].bindingContext.deleteCategory }}"
+                            class="btn-danger"
+                            width="15%" />
+                    </StackLayout>
+                </ListView.itemTemplate>
+            </ListView>
+            
+            <ActivityIndicator busy="{{ isLoading }}" marginTop="16" />
+            
+            <!-- 編集ダイアログ（非表示） -->
+            <StackLayout visibility="{{ isEditing ? 'visible' : 'collapsed' }}" 
+                         backgroundColor="#F5F5F5" 
+                         padding="16" 
+                         marginTop="16">
+                <Label text="カテゴリを編集" class="h3" marginBottom="8" />
+                <TextField 
+                    text="{{ editCategoryName }}" 
+                    hint="新しいカテゴリ名"
+                    marginBottom="8" />
+                <StackLayout orientation="horizontal">
+                    <Button 
+                        text="保存" 
+                        tap="{{ saveCategory }}"
+                        class="btn-primary"
+                        width="45%" />
+                    <Button 
+                        text="キャンセル" 
+                        tap="{{ cancelEdit }}"
+                        class="btn-secondary"
+                        width="45%" 
+                        marginLeft="10%" />
+                </StackLayout>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+</Page>

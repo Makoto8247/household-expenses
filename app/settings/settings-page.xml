@@ -11,7 +11,38 @@
     </ActionBar>
 
     <GridLayout class="page__content">
-        <Label class="page__content-icon fas" text="&#xf013;"></Label>
-        <Label class="page__content-placeholder" text="<!-- Page content goes here -->"></Label>
+        <StackLayout padding="16">
+            <Label text="設定メニュー" class="h2" marginBottom="16" />
+            
+            <!-- カテゴリ設定への遷移 -->
+            <GridLayout 
+                columns="auto, *"
+                tap="{{ navigateToCategories }}"
+                class="btn-primary"
+                marginBottom="12"
+                padding="12">
+                <Label col="0" text="&#xf07b;" class="nt-icon fas" />
+                <Label col="1" text="カテゴリ設定" class="p-l-10" />
+            </GridLayout>
+            
+            <!-- 他の設定項目 -->
+            <GridLayout 
+                columns="auto, *"
+                class="btn-secondary"
+                marginBottom="12"
+                padding="12">
+                <Label col="0" text="&#xf019;" class="nt-icon fas" />
+                <Label col="1" text="データのバックアップ" class="p-l-10" />
+            </GridLayout>
+                
+            <GridLayout 
+                columns="auto, *"
+                class="btn-secondary"
+                marginBottom="12"
+                padding="12">
+                <Label col="0" text="&#xf093;" class="nt-icon fas" />
+                <Label col="1" text="データの復元" class="p-l-10" />
+            </GridLayout>
+        </StackLayout>
     </GridLayout>
 </Page>
