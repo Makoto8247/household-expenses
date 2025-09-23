@@ -1,11 +1,8 @@
-import { Sqlite } from "nativescript-sqlite";
-
-let categoriesDB = null;
-let expensesDB = null;
+const Sqlite = require("nativescript-sqlite");
 
 async function createTables() {
-    categoriesDB = await Sqlite("categories.db");
-    expensesDB = await Sqlite("expenses.db");
+    const categoriesDB = await Sqlite("categories.db");
+    const expensesDB = await Sqlite("expenses.db");
     await categoriesDB.execSQL(`
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,10 +28,13 @@ async function createTables() {
 }
 
 async function getCategories() {
+    const categoriesDB = await Sqlite("categories.db");
     return await categoriesDB.all("SELECT * FROM categories ORDER BY name");
 }
 
 async function addCategory(name, icon = null, color = "#65BBE9") {
+    const categoriesDB = await Sqlite("categories.db");
+    const expensesDB = await Sqlite("expenses.db");
     try {
         await categoriesDB.execSQL(
             "INSERT INTO categories (name, icon, color) VALUES (?, ?, ?)",
@@ -47,6 +47,8 @@ async function addCategory(name, icon = null, color = "#65BBE9") {
 }
 
 async function deleteCategory(id) {
+    const categoriesDB = await Sqlite("categories.db");
+    const expensesDB = await Sqlite("expenses.db");
     try {
         const count = await expensesDB.get(
             "SELECT COUNT(*) as count FROM expenses WHERE category_id = ?",
@@ -64,6 +66,7 @@ async function deleteCategory(id) {
 }
 
 async function updateCategory(id, name, icon = null, color = "#65BBE9") {
+    const categoriesDB = await Sqlite("categories.db");
     try {
         await categoriesDB.execSQL(
             "UPDATE categories SET name = ?, icon = ?, color = ? WHERE id = ?",
