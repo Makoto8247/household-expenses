@@ -3,8 +3,8 @@ import { Sqlite } from "nativescript-sqlite";
 const categoriesDB = await Sqlite("categories.db");
 const expensesDB = await Sqlite("expenses.db");
 
-function createTables() {
-    categoriesDB.execSQL(`
+async function createTables() {
+    await categoriesDB.execSQL(`
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
@@ -13,7 +13,7 @@ function createTables() {
         )
     `);
 
-    expensesDB.execSQL(`
+    await expensesDB.execSQL(`
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             expense BOOLEAN NOT NULL,
@@ -28,13 +28,13 @@ function createTables() {
     `);
 }
 
-function getCategories() {
-    return categoriesDB.all("SELECT name FROM categories");
+async function getCategories() {
+    return await categoriesDB.all("SELECT name FROM categories");
 }
 
-function addCategory(name, icon = null, color = "#65BBE9") {
+async function addCategory(name, icon = null, color = "#65BBE9") {
     try {
-        categoriesDB.execSQL(
+        await categoriesDB.execSQL(
             "INSERT INTO categories (name, icon, color) VALUES (?, ?, ?)",
             [name, icon, color]
         );
@@ -44,9 +44,9 @@ function addCategory(name, icon = null, color = "#65BBE9") {
     }
 }
 
-function deleteCategory(id) {
+async function deleteCategory(id) {
     try {
-        const count = categoriesDB.get(
+        const count = await categoriesDB.get(
             "SELECT COUNT(*) FROM expenses WHERE category_id = ?",
             [id]
         );
@@ -54,16 +54,16 @@ function deleteCategory(id) {
         if (count.count > 0) {
             return { success: false, error: "Cannot delete category with associated expenses." };
         }
-        categoriesDB.execSQL("DELETE FROM categories WHERE id = ?", [id]);
+        await categoriesDB.execSQL("DELETE FROM categories WHERE id = ?", [id]);
         return { success: true };
     } catch (error) {
         return { success: false, error: error.message };
     }
 }
 
-function updateCategory(id, name, icon = null, color = "#65BBE9") {
+async function updateCategory(id, name, icon = null, color = "#65BBE9") {
     try {
-        categoriesDB.execSQL(
+        await categoriesDB.execSQL(
             "UPDATE categories SET name = ?, icon = ?, color = ? WHERE id = ?",
             [name, icon, color, id]
         );
