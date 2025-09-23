@@ -31,7 +31,7 @@ async function createTables() {
 }
 
 async function getCategories() {
-    return await categoriesDB.all("SELECT name FROM categories");
+    return await categoriesDB.all("SELECT * FROM categories ORDER BY name");
 }
 
 async function addCategory(name, icon = null, color = "#65BBE9") {
@@ -48,13 +48,13 @@ async function addCategory(name, icon = null, color = "#65BBE9") {
 
 async function deleteCategory(id) {
     try {
-        const count = await categoriesDB.get(
-            "SELECT COUNT(*) FROM expenses WHERE category_id = ?",
+        const count = await expensesDB.get(
+            "SELECT COUNT(*) as count FROM expenses WHERE category_id = ?",
             [id]
         );
 
         if (count.count > 0) {
-            return { success: false, error: "Cannot delete category with associated expenses." };
+            return { success: false, error: "このカテゴリは使用中のため削除できません" };
         }
         await categoriesDB.execSQL("DELETE FROM categories WHERE id = ?", [id]);
         return { success: true };
