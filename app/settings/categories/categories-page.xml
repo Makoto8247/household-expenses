@@ -37,13 +37,13 @@
                             width="60%" />
                         <Button 
                             text="編集" 
-                            tap="{{ $parents['Page'].bindingContext.editCategory }}"
+                            tap="onEditCategory"
                             class="btn-secondary"
                             width="15%" 
                             marginRight="5%" />
                         <Button 
                             text="削除" 
-                            tap="{{ $parents['Page'].bindingContext.deleteCategory }}"
+                            tap="onDeleteCategory"
                             class="btn-danger"
                             width="15%" />
                     </StackLayout>
@@ -65,12 +65,12 @@
                 <StackLayout orientation="horizontal">
                     <Button 
                         text="保存" 
-                        tap="{{ saveCategory }}"
+                        tap="onSaveCategory"
                         class="btn-primary"
                         width="45%" />
                     <Button 
                         text="キャンセル" 
-                        tap="{{ cancelEdit }}"
+                        tap="onCancelEdit"
                         class="btn-secondary"
                         width="45%" 
                         marginLeft="10%" />
