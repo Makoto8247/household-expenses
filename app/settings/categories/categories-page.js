@@ -22,6 +22,7 @@ export function onEditCategory(args) {
     const item = args.object.bindingContext;
     viewModel.set("editingCategoryId", item.id);
     viewModel.set("editCategoryName", item.name);
+    viewModel.set("editSelectedIcon", item.icon || "");
     viewModel.set("isEditing", true);
 }
 
@@ -29,6 +30,7 @@ export function onEditCategory(args) {
 export async function onSaveCategory() {
     const name = viewModel.get("editCategoryName").trim();
     const id = viewModel.get("editingCategoryId");
+    const icon = viewModel.get("editSelectedIcon");
     
     if (!name) {
         alert("カテゴリ名を入力してください");
@@ -37,11 +39,12 @@ export async function onSaveCategory() {
     
     viewModel.set("isLoading", true);
     try {
-        const result = await updateCategory(id, name);
+        const result = await updateCategory(id, name, icon);
         if (result.success) {
             viewModel.set("isEditing", false);
             viewModel.set("editCategoryName", "");
             viewModel.set("editingCategoryId", null);
+            viewModel.set("editSelectedIcon", "");
             viewModel.categories.splice(0); // 配列をクリア
             await viewModel.loadCategories();
             alert("カテゴリを更新しました");
@@ -92,4 +95,28 @@ export async function onDeleteCategory(args) {
             viewModel.set("isLoading", false);
         }
     });
+}
+
+// アイコンを選択（追加用）
+export function onSelectIcon(args) {
+    const iconEmoji = args.object.text;
+    viewModel.set("selectedIcon", iconEmoji);
+}
+
+// アイコンを選択（編集用）
+export function onSelectEditIcon(args) {
+    const iconEmoji = args.object.text;
+    viewModel.set("editSelectedIcon", iconEmoji);
+}
+
+// アイコンピッカーを表示/非表示
+export function onToggleIconPicker() {
+    const current = viewModel.get("showIconPicker");
+    viewModel.set("showIconPicker", !current);
+}
+
+// 編集用アイコンピッカーを表示/非表示
+export function onToggleEditIconPicker() {
+    const current = viewModel.get("isEditingIcon");
+    viewModel.set("isEditingIcon", !current);
 }

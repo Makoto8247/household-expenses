@@ -10,6 +10,53 @@ export function createViewModel() {
     viewModel.isEditing = false;
     viewModel.editCategoryName = "";
     viewModel.editingCategoryId = null;
+    viewModel.selectedIcon = ""; // 初期状態は空
+    viewModel.editSelectedIcon = "";
+    viewModel.showIconPicker = false;
+    viewModel.isEditingIcon = false; // 編集時のアイコン選択モード
+    
+    // 絵文字アイコン一覧
+    viewModel.iconList = new ObservableArray([
+        "🏠", // 家
+        "🚗", // 車
+        "🍽️", // 食事
+        "💡", // 電球
+        "👕", // 衣服
+        "🏥", // 医療
+        "📚", // 本
+        "👶", // 子供
+        "🛒", // ショッピング
+        "📁", // フォルダ
+        "💰", // お金
+        "☁️", // 雲
+        "🌙", // 月
+        "☀️", // 太陽
+        "👤", // ユーザー
+        "⚡", // 電気
+        "🎵", // 音楽
+        "🎮", // ゲーム
+        "📱", // スマホ
+        "✈️"  // 旅行
+    ]);
+    
+    // 選択されたアイコンを表示する関数
+    viewModel.getSelectedIconDisplay = function() {
+        const selectedIcon = viewModel.get("selectedIcon");
+        return selectedIcon || "";
+    };
+    
+    // 編集中のアイコンを表示する関数
+    viewModel.getEditIconDisplay = function() {
+        const editIcon = viewModel.get("editSelectedIcon");
+        return editIcon || "";
+    };
+    
+    // カテゴリアイコンのUnicodeを取得する関数
+    viewModel.getCategoryIconUnicode = function(code) {
+        if (!code) return "";
+        const icon = viewModel.iconList.find(item => item.code === code);
+        return icon ? icon.unicode : "";
+    };
     
     viewModel.initialize = async function() {
         viewModel.set("isLoading", true);
@@ -47,6 +94,7 @@ export function createViewModel() {
     // カテゴリを追加
     viewModel.addCategory = async function() {
         const name = viewModel.get("newCategoryName").trim();
+        const icon = viewModel.get("selectedIcon");
         if (!name) {
             alert("カテゴリ名を入力してください");
             return;
@@ -54,9 +102,11 @@ export function createViewModel() {
         
         viewModel.set("isLoading", true);
         try {
-            const result = await addCategory(name);
+            const result = await addCategory(name, icon);
             if (result.success) {
                 viewModel.set("newCategoryName", "");
+                viewModel.set("selectedIcon", ""); // 空にリセット
+                viewModel.categories.splice(0);
                 await viewModel.loadCategories();
                 alert("カテゴリを追加しました");
             } else {

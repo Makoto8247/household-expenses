@@ -1,26 +1,78 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="onLoaded">
     <ActionBar title="カテゴリ設定">
-        <NavigationButton text="戻る" tap="onBackTap" />
     </ActionBar>
     
     <ScrollView>
         <StackLayout padding="16">
+            
+            <!-- 戻るボタン -->
+            <Button 
+                text="戻る" 
+                tap="onBackTap"
+                backgroundColor="#D84315"
+                color="#FFFFFF"
+                borderRadius="8"
+                padding="12"
+                fontSize="16"
+                horizontalAlignment="left"
+                marginBottom="16" />
 
             <!-- カテゴリ追加セクション -->
             <Label text="新しいカテゴリを追加" class="h3" marginBottom="16" />
             
-            <StackLayout orientation="horizontal" marginBottom="16">
-                <TextField 
-                    text="{{ newCategoryName }}" 
-                    hint="カテゴリ名を入力"
-                    width="70%" />
-                <Button 
-                    text="追加" 
-                    tap="{{ addCategory }}"
-                    class="btn-primary"
-                    width="25%" 
-                    marginLeft="5%" />
+            <!-- アイコン選択 -->
+            <StackLayout marginBottom="16">
+                <Label text="アイコンを選択（任意）" fontSize="14" marginBottom="4" />
+                <Button text="{{ selectedIcon || '📁' }}" 
+                        tap="onToggleIconPicker" 
+                        fontSize="24" 
+                        width="60" 
+                        height="50"
+                        backgroundColor="{{ selectedIcon ? '#e3f2fd' : '#f5f5f5' }}"
+                        borderRadius="8"
+                        horizontalAlignment="left"
+                        marginBottom="8" />
+                
+                <!-- カテゴリ名入力と追加ボタン -->
+                <StackLayout orientation="horizontal">
+                    <TextField 
+                        text="{{ newCategoryName }}" 
+                        hint="カテゴリ名を入力"
+                        width="70%" />
+                    <Button 
+                        text="追加" 
+                        tap="{{ addCategory }}"
+                        class="btn-primary"
+                        width="25%" 
+                        marginLeft="5%" />
+                </StackLayout>
+                
+                <!-- 絵文字選択パネル -->
+                <StackLayout visibility="{{ showIconPicker ? 'visible' : 'collapsed' }}" 
+                             backgroundColor="#ffffff" 
+                             padding="8" 
+                             borderRadius="8"
+                             marginTop="8">
+                    <Label text="絵文字を選択してください:" fontSize="14" marginBottom="8" />
+                    <ScrollView height="120" width="100%">
+                        <WrapLayout orientation="horizontal" width="100%">
+                            <Repeater items="{{ iconList }}">
+                                <Repeater.itemTemplate>
+                                    <Button text="{{ $value }}" 
+                                            tap="onSelectIcon" 
+                                            backgroundColor="transparent" 
+                                            fontSize="28" 
+                                            width="45" 
+                                            height="50" 
+                                            margin="2" />
+                                </Repeater.itemTemplate>
+                            </Repeater>
+                        </WrapLayout>
+                    </ScrollView>
+                    <Button text="選択完了" tap="onToggleIconPicker" class="btn-secondary" marginTop="8" />
+                </StackLayout>
             </StackLayout>
+            
             
             <!-- カテゴリ一覧 -->
             <Label text="登録済みカテゴリ" class="h3" marginBottom="8" />
@@ -31,10 +83,12 @@
                 separatorColor="#E0E0E0">
                 <ListView.itemTemplate>
                     <StackLayout orientation="horizontal" padding="12">
+                        <Label text="{{ icon }}" fontSize="20" verticalAlignment="center" width="15%" textAlignment="center" />
                         <Label 
                             text="{{ name }}" 
                             verticalAlignment="center"
-                            width="60%" />
+                            width="45%" 
+                            marginLeft="8" />
                         <Button 
                             text="編集" 
                             tap="onEditCategory"
@@ -58,6 +112,46 @@
                          padding="16" 
                          marginTop="16">
                 <Label text="カテゴリを編集" class="h3" marginBottom="8" />
+                
+                <!-- 編集用アイコン選択 -->
+                <StackLayout marginBottom="8">
+                    <Label text="アイコン" fontSize="14" marginBottom="4" />
+                    <StackLayout orientation="horizontal" marginBottom="8">
+                        <Button text="{{ editSelectedIcon || '📁' }}" 
+                                tap="onToggleEditIconPicker" 
+                                fontSize="24" 
+                                width="60" 
+                                height="50"
+                                backgroundColor="{{ editSelectedIcon ? '#e3f2fd' : '#f5f5f5' }}"
+                                borderRadius="8" />
+                    </StackLayout>
+                    
+                    <!-- 編集用絵文字選択パネル -->
+                    <StackLayout visibility="{{ isEditingIcon ? 'visible' : 'collapsed' }}" 
+                                 backgroundColor="#ffffff" 
+                                 padding="8" 
+                                 borderRadius="8"
+                                 marginBottom="8">
+                        <Label text="絵文字を選択してください:" fontSize="14" marginBottom="8" />
+                        <ScrollView height="120" width="100%">
+                            <WrapLayout orientation="horizontal" width="100%">
+                                <Repeater items="{{ iconList }}">
+                                    <Repeater.itemTemplate>
+                                        <Button text="{{ $value }}" 
+                                                tap="onSelectEditIcon" 
+                                                backgroundColor="transparent" 
+                                                fontSize="24" 
+                                                width="45" 
+                                                height="45" 
+                                                margin="2" />
+                                    </Repeater.itemTemplate>
+                                </Repeater>
+                            </WrapLayout>
+                        </ScrollView>
+                        <Button text="選択完了" tap="onToggleEditIconPicker" class="btn-secondary" marginTop="8" />
+                    </StackLayout>
+                </StackLayout>
+                
                 <TextField 
                     text="{{ editCategoryName }}" 
                     hint="新しいカテゴリ名"
