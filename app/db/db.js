@@ -1,9 +1,9 @@
 const Sqlite = require("nativescript-sqlite");
 
 async function createTables() {
-    const categoriesDB = await Sqlite("categories.db");
-    const expensesDB = await Sqlite("expenses.db");
-    await categoriesDB.execSQL(`
+    const db = await Sqlite("household.db");
+    
+    await db.execSQL(`
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
@@ -12,7 +12,7 @@ async function createTables() {
         )
     `);
 
-    await expensesDB.execSQL(`
+    await db.execSQL(`
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             expense BOOLEAN NOT NULL,
@@ -28,15 +28,14 @@ async function createTables() {
 }
 
 async function getCategories() {
-    const categoriesDB = await Sqlite("categories.db");
-    return await categoriesDB.all("SELECT * FROM categories ORDER BY name");
+    const db = await Sqlite("household.db");
+    return await db.all("SELECT * FROM categories ORDER BY name");
 }
 
 async function addCategory(name, icon = null, color = "#65BBE9") {
-    const categoriesDB = await Sqlite("categories.db");
-    const expensesDB = await Sqlite("expenses.db");
+    const db = await Sqlite("household.db");
     try {
-        await categoriesDB.execSQL(
+        await db.execSQL(
             "INSERT INTO categories (name, icon, color) VALUES (?, ?, ?)",
             [name, icon, color]
         );
@@ -47,10 +46,9 @@ async function addCategory(name, icon = null, color = "#65BBE9") {
 }
 
 async function deleteCategory(id) {
-    const categoriesDB = await Sqlite("categories.db");
-    const expensesDB = await Sqlite("expenses.db");
+    const db = await Sqlite("household.db");
     try {
-        const count = await expensesDB.get(
+        const count = await db.get(
             "SELECT COUNT(*) as count FROM expenses WHERE category_id = ?",
             [id]
         );
@@ -58,7 +56,7 @@ async function deleteCategory(id) {
         if (count.count > 0) {
             return { success: false, error: "このカテゴリは使用中のため削除できません" };
         }
-        await categoriesDB.execSQL("DELETE FROM categories WHERE id = ?", [id]);
+        await db.execSQL("DELETE FROM categories WHERE id = ?", [id]);
         return { success: true };
     } catch (error) {
         return { success: false, error: error.message };
@@ -66,9 +64,9 @@ async function deleteCategory(id) {
 }
 
 async function updateCategory(id, name, icon = null, color = "#65BBE9") {
-    const categoriesDB = await Sqlite("categories.db");
+    const db = await Sqlite("household.db");
     try {
-        await categoriesDB.execSQL(
+        await db.execSQL(
             "UPDATE categories SET name = ?, icon = ?, color = ? WHERE id = ?",
             [name, icon, color, id]
         );
@@ -78,4 +76,44 @@ async function updateCategory(id, name, icon = null, color = "#65BBE9") {
     }
 }
 
-export { createTables, getCategories, addCategory, deleteCategory, updateCategory };
+async function addExpense(isExpense, amount, categoryId, description = null) {
+    const db = await Sqlite("household.db");
+    try {
+        await db.execSQL(
+            "INSERT INTO expenses (expense, amount, category_id, description) VALUES (?, ?, ?, ?)",
+            [isExpense, amount, categoryId, description]
+        );
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+async function getExpenses(limit = 50) {
+    const db = await Sqlite("household.db");
+    try {
+        const expenses = await db.all(`
+            SELECT e.*, c.name as category_name, c.icon as category_icon 
+            FROM expenses e 
+            LEFT JOIN categories c ON e.category_id = c.id 
+            ORDER BY e.date DESC, e.created_at DESC 
+            LIMIT ?
+        `, [limit]);
+        return expenses;
+    } catch (error) {
+        console.error("Error fetching expenses:", error);
+        return [];
+    }
+}
+
+async function deleteExpense(id) {
+    const db = await Sqlite("household.db");
+    try {
+        await db.execSQL("DELETE FROM expenses WHERE id = ?", [id]);
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+export { createTables, getCategories, addCategory, deleteCategory, updateCategory, addExpense, getExpenses, deleteExpense };
