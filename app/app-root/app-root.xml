@@ -29,8 +29,16 @@
                         <Label row="0" col="1" text="Home" class="p-r-10" />
                     </GridLayout>
 
-
-
+                    <GridLayout
+            columns="auto, *"
+            class="{{ 'nt-drawer__list-item' + (selectedPage === 'Record' ? ' -selected': '') }}"
+            route="record/record-page"
+            title="Record"
+            tap="onNavigationItemTap"
+          >
+                        <Label row="0" col="0" text="&#xf304;" class="nt-icon fas" />
+                        <Label row="0" col="1" text="Record" class="p-r-10" />
+                    </GridLayout>
 
                     <StackLayout class="hr" />
 

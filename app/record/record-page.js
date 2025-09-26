@@ -1,10 +1,10 @@
 import { Application } from '@nativescript/core'
 
-import { BrowseViewModel } from './browse-view-model'
+import { RecordViewModel } from './record-view-model'
 
 export function onNavigatingTo(args) {
   const page = args.object
-  page.bindingContext = new BrowseViewModel()
+  page.bindingContext = new RecordViewModel()
 }
 
 export function onDrawerButtonTap(args) {
