@@ -10,39 +10,52 @@
         </GridLayout>
     </ActionBar>
 
-    <GridLayout class="page__content">
-        <StackLayout padding="16">
-            <Label text="設定メニュー" class="h2" marginBottom="16" />
+    <ScrollView class="page__content">
+        <StackLayout padding="20">
+            <Label text="設定メニュー" class="h2" marginBottom="24" textAlignment="center" />
             
             <!-- カテゴリ設定への遷移 -->
-            <GridLayout 
-                columns="auto, *"
+            <StackLayout 
                 tap="{{ navigateToCategories }}"
-                class="btn-primary"
-                marginBottom="12"
-                padding="12">
-                <Label col="0" text="&#xf07b;" class="nt-icon fas" />
-                <Label col="1" text="カテゴリ設定" class="p-l-10" />
-            </GridLayout>
+                class="list-group-item"
+                marginBottom="16"
+                padding="16"
+                backgroundColor="#f8f9fa"
+                borderRadius="8">
+                <StackLayout orientation="horizontal">
+                    <Label text="&#xf07b;" class="fas text-primary" fontSize="20" verticalAlignment="center" />
+                    <Label text="カテゴリ設定" class="h3" marginLeft="16" verticalAlignment="center" />
+                </StackLayout>
+                <Label text="支出カテゴリの追加・編集・削除" class="text-muted" fontSize="14" marginTop="4" />
+            </StackLayout>
             
-            <!-- 他の設定項目 -->
-            <GridLayout 
-                columns="auto, *"
-                class="btn-secondary"
-                marginBottom="12"
-                padding="12">
-                <Label col="0" text="&#xf019;" class="nt-icon fas" />
-                <Label col="1" text="データのバックアップ" class="p-l-10" />
-            </GridLayout>
+            <!-- データのバックアップ -->
+            <StackLayout 
+                class="list-group-item"
+                marginBottom="16"
+                padding="16"
+                backgroundColor="#f8f9fa"
+                borderRadius="8">
+                <StackLayout orientation="horizontal">
+                    <Label text="&#xf019;" class="fas text-success" fontSize="20" verticalAlignment="center" />
+                    <Label text="データのバックアップ" class="h3" marginLeft="16" verticalAlignment="center" />
+                </StackLayout>
+                <Label text="データをエクスポートして保存" class="text-muted" fontSize="14" marginTop="4" />
+            </StackLayout>
                 
-            <GridLayout 
-                columns="auto, *"
-                class="btn-secondary"
-                marginBottom="12"
-                padding="12">
-                <Label col="0" text="&#xf093;" class="nt-icon fas" />
-                <Label col="1" text="データの復元" class="p-l-10" />
-            </GridLayout>
+            <!-- データの復元 -->
+            <StackLayout 
+                class="list-group-item"
+                marginBottom="16"
+                padding="16"
+                backgroundColor="#f8f9fa"
+                borderRadius="8">
+                <StackLayout orientation="horizontal">
+                    <Label text="&#xf093;" class="fas text-info" fontSize="20" verticalAlignment="center" />
+                    <Label text="データの復元" class="h3" marginLeft="16" verticalAlignment="center" />
+                </StackLayout>
+                <Label text="バックアップデータからデータを復元" class="text-muted" fontSize="14" marginTop="4" />
+            </StackLayout>
         </StackLayout>
-    </GridLayout>
+    </ScrollView>
 </Page>
