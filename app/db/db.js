@@ -1,6 +1,49 @@
 const Sqlite = require("nativescript-sqlite");
 
-async function createTables() {
+// Data structure definitions (like structs)
+class CategoryData {
+    constructor({
+        id,
+        name, 
+        icon,
+        color
+    }) {
+        this.id = id || 0;
+        this.name = name || '';
+        this.icon = icon || '📝';
+        this.color = color || '#65BBE9';
+    }
+}
+
+class ExpenseData {
+    constructor({
+        id,
+        title,
+        expense,
+        amount,
+        categoryId,
+        categoryName,
+        categoryIcon,
+        date,
+        description,
+        createdAt,
+        updatedAt
+    }) {
+        this.id = id || 0;
+        this.title = title || '';
+        this.expense = Boolean(expense);
+        this.amount = parseFloat(amount) || 0;
+        this.categoryId = categoryId || null;
+        this.categoryName = categoryName || 'カテゴリなし';
+        this.categoryIcon = categoryIcon || '📝';
+        this.date = date || new Date().toISOString().split('T')[0];
+        this.description = description || '';
+        this.createdAt = createdAt || '';
+        this.updatedAt = updatedAt || '';
+    }
+}
+
+export async function createTables() {
     const db = await Sqlite("household.db");
     
     await db.execSQL(`
@@ -15,6 +58,7 @@ async function createTables() {
     await db.execSQL(`
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title CHAR(20) NOT NULL,
             expense BOOLEAN NOT NULL,
             amount REAL NOT NULL CHECK(amount > 0),
             category_id INTEGER,
@@ -27,12 +71,39 @@ async function createTables() {
     `);
 }
 
-async function getCategories() {
+export async function getCategories() {
     const db = await Sqlite("household.db");
-    return await db.all("SELECT * FROM categories ORDER BY name");
+    try {
+        const rows = await db.all("SELECT * FROM categories ORDER BY name");
+        return rows.map(row => new CategoryData({
+            id: row[0],
+            name: row[1],
+            icon: row[2],
+            color: row[3]
+        }));
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        return [];
+    }
 }
 
-async function addCategory(name, icon = null, color = "#65BBE9") {
+export async function getCategory(id) {
+    const db = await Sqlite("household.db");
+    try {
+        const row = await db.get("SELECT * FROM categories WHERE id = ?", [id]);
+        return row ? new CategoryData({
+            id: row[0],
+            name: row[1],
+            icon: row[2],
+            color: row[3]
+        }) : null;
+    } catch (error) {
+        console.error("Error fetching category:", error);
+        return null;
+    }
+}
+
+export async function addCategory(name, icon = null, color = "#65BBE9") {
     const db = await Sqlite("household.db");
     try {
         await db.execSQL(
@@ -45,7 +116,7 @@ async function addCategory(name, icon = null, color = "#65BBE9") {
     }
 }
 
-async function deleteCategory(id) {
+export async function deleteCategory(id) {
     const db = await Sqlite("household.db");
     try {
         const count = await db.get(
@@ -63,7 +134,7 @@ async function deleteCategory(id) {
     }
 }
 
-async function updateCategory(id, name, icon = null, color = "#65BBE9") {
+export async function updateCategory(id, name, icon = null, color = "#65BBE9") {
     const db = await Sqlite("household.db");
     try {
         await db.execSQL(
@@ -76,12 +147,13 @@ async function updateCategory(id, name, icon = null, color = "#65BBE9") {
     }
 }
 
-async function addExpense(isExpense, amount, categoryId, description = null) {
+export async function addExpense(isExpense, title, amount, categoryId, description = null) {
     const db = await Sqlite("household.db");
     try {
         await db.execSQL(
-            "INSERT INTO expenses (expense, amount, category_id, description) VALUES (?, ?, ?, ?)",
-            [isExpense, amount, categoryId, description]
+            `INSERT INTO expenses (expense, title, amount, category_id, description)
+                VALUES (?, ?, ?, ?, ?)`,
+            [isExpense, title, amount, categoryId, description]
         );
         return { success: true };
     } catch (error) {
@@ -89,24 +161,66 @@ async function addExpense(isExpense, amount, categoryId, description = null) {
     }
 }
 
-async function getExpenses(limit = 50) {
+export async function getExpenses(limit = 50) {
     const db = await Sqlite("household.db");
     try {
-        const expenses = await db.all(`
+        const rows = await db.all(`
             SELECT e.*, c.name as category_name, c.icon as category_icon 
             FROM expenses e 
             LEFT JOIN categories c ON e.category_id = c.id 
             ORDER BY e.date DESC, e.created_at DESC 
             LIMIT ?
         `, [limit]);
-        return expenses;
+
+        return rows.map(row => new ExpenseData({
+            id: row[0],
+            title: row[1],
+            expense: row[2],
+            amount: row[3],
+            categoryId: row[4],
+            categoryName: row[5],
+            categoryIcon: row[6],
+            date: row[7],
+            description: row[8],
+            createdAt: row[9],
+            updatedAt: row[10]
+        }));
     } catch (error) {
         console.error("Error fetching expenses:", error);
         return [];
     }
 }
 
-async function deleteExpense(id) {
+export async function getExpense(id) {
+    const db = await Sqlite("household.db");
+    try {
+        const row = await db.get(`
+            SELECT e.*, c.name as category_name, c.icon as category_icon 
+            FROM expenses e 
+            LEFT JOIN categories c ON e.category_id = c.id 
+            WHERE e.id = ?
+        `, [id]);
+        
+        return row ? new ExpenseData({
+            id: row[0],
+            title: row[1],
+            expense: row[2],
+            amount: row[3],
+            categoryId: row[4],
+            categoryName: row[5],
+            categoryIcon: row[6],
+            date: row[7],
+            description: row[8],
+            createdAt: row[9],
+            updatedAt: row[10]
+        }) : null;
+    } catch (error) {
+        console.error("Error fetching expense:", error);
+        return null;
+    }
+}
+
+export async function deleteExpense(id) {
     const db = await Sqlite("household.db");
     try {
         await db.execSQL("DELETE FROM expenses WHERE id = ?", [id]);
@@ -115,5 +229,3 @@ async function deleteExpense(id) {
         return { success: false, error: error.message };
     }
 }
-
-export { createTables, getCategories, addCategory, deleteCategory, updateCategory, addExpense, getExpenses, deleteExpense };
