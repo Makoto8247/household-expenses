@@ -1,5 +1,6 @@
 <Page
     navigatingTo="onNavigatingTo"
+    loaded="onLoaded"
     xmlns="http://schemas.nativescript.org/tns.xsd">
 
     <ActionBar>
@@ -10,8 +11,108 @@
         </GridLayout>
     </ActionBar>
 
-    <GridLayout class="page__content">
-        <Label class="page__content-icon far" text="&#xf1ea;"></Label>
-        <Label class="page__content-placeholder" text="<!-- Page content goes here -->"></Label>
-    </GridLayout>
+    <ScrollView>
+        <StackLayout padding="16">
+            <!-- 家計簿記録フォーム -->
+            <Label text="家計簿を記録" class="h3" marginBottom="16" />
+            
+            <!-- 収入/支出選択 -->
+            <StackLayout marginBottom="16">
+                <Label text="種別" fontSize="14" marginBottom="4" />
+                <StackLayout orientation="horizontal">
+                    <Button text="支出" 
+                            tap="onExpenseTypeTap"
+                            backgroundColor="{{ isExpense ? '#FF8A80' : '#F5F5F5' }}"
+                            color="{{ isExpense ? '#FFFFFF' : '#666666' }}"
+                            borderRadius="8" 
+                            width="45%" />
+                    <Button text="収入" 
+                            tap="onIncomeTypeTap"
+                            backgroundColor="{{ !isExpense ? '#A5D6A7' : '#F5F5F5' }}"
+                            color="{{ !isExpense ? '#FFFFFF' : '#666666' }}"
+                            borderRadius="8" 
+                            width="45%" 
+                            marginLeft="10%" />
+                </StackLayout>
+            </StackLayout>
+
+            <!-- タイトル入力 -->
+            <StackLayout marginBottom="16">
+                <Label text="タイトル" fontSize="14" marginBottom="4" />
+                <TextField 
+                    text="{{ title }}" 
+                    hint="タイトルを入力（1-20文字）"
+                    maxLength="20" />
+            </StackLayout>
+
+            <!-- 金額入力 -->
+            <StackLayout marginBottom="16">
+                <Label text="金額" fontSize="14" marginBottom="4" />
+                <TextField 
+                    text="{{ amount }}" 
+                    hint="金額を入力"
+                    keyboardType="number" />
+            </StackLayout>
+
+            <!-- カテゴリ選択 -->
+            <StackLayout marginBottom="16">
+                <Label text="カテゴリ" fontSize="14" marginBottom="4" />
+                <ListPicker 
+                    items="{{ categoryNames }}"
+                    selectedIndex="{{ selectedCategoryIndex }}"
+                    backgroundColor="#F5F5F5"
+                    borderRadius="8" />
+            </StackLayout>
+
+            <!-- 説明入力 -->
+            <StackLayout marginBottom="16">
+                <Label text="説明（任意）" fontSize="14" marginBottom="4" />
+                <TextField 
+                    text="{{ description }}" 
+                    hint="説明を入力" />
+            </StackLayout>
+
+            <!-- 記録ボタン -->
+            <Button 
+                text="記録する" 
+                tap="onRecordTap"
+                backgroundColor="#4CAF50"
+                color="#FFFFFF"
+                borderRadius="8"
+                marginBottom="32" />
+
+            <ActivityIndicator busy="{{ isLoading }}" marginBottom="16" />
+
+            <!-- 記録一覧 -->
+            <Label text="最近の記録" class="h3" marginBottom="16" />
+            
+            <ListView 
+                items="{{ records }}" 
+                height="400"
+                separatorColor="#E0E0E0">
+                <ListView.itemTemplate>
+                    <StackLayout orientation="horizontal" padding="12">
+                        <Label text="{{ categoryIcon }}" 
+                               fontSize="20" 
+                               verticalAlignment="center" 
+                               width="10%" 
+                               textAlignment="center" />
+                        <StackLayout width="50%" marginLeft="8">
+                            <Label text="{{ title }}" 
+                                   fontSize="16" 
+                                   fontWeight="bold" />
+                            <Label text="{{ date }}" fontSize="12" color="#999999" />
+                        </StackLayout>
+                        <Label text="{{ formattedAmount }}" 
+                               fontSize="16" 
+                               fontWeight="bold"
+                               color="{{ isExpense ? '#F44336' : '#4CAF50' }}"
+                               textAlignment="right"
+                               width="30%" 
+                               verticalAlignment="center" />
+                    </StackLayout>
+                </ListView.itemTemplate>
+            </ListView>
+        </StackLayout>
+    </ScrollView>
 </Page>
